@@ -1,6 +1,7 @@
 from typing import Tuple
-from find_fib_path.find_fib_path import TreeNode
+from find_fib_path import TreeNode
 import pytest
+from find_fib_path import Solution
 
 
 def create_tree(n: int, x: int) -> Tuple[TreeNode, int]:
@@ -70,8 +71,6 @@ def find_path_in_tree(root: TreeNode, start: int, end: int) -> str:
 
 
 def test_single_node_orders():
-    from find_fib_path.find_fib_path import Solution
-
     sol = Solution()
 
     # Order 0 and 1 trees: only one node (label 0)
@@ -97,7 +96,6 @@ _cases = [
 
 @pytest.mark.parametrize("s,e", _cases, ids=[f"{s}->{e}" for s, e in _cases])
 def test_paths_match_ground_truth(s: int, e: int):
-    from find_fib_path.find_fib_path import Solution
 
     sol = Solution()
     root5, _ = create_tree(5, 0)
@@ -107,7 +105,6 @@ def test_paths_match_ground_truth(s: int, e: int):
 
 
 def test_given_example_5_to_7():
-    from find_fib_path.find_fib_path import Solution
     sol = Solution()
     root, _ = create_tree(5, 0)
     assert sol.find_fib_path(5, 7, root) == "UUURL"
