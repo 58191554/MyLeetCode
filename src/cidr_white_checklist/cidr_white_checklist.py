@@ -31,7 +31,7 @@ class Solution:
                 size = 0
             else:
                 size = int(size)
-            end = start + (1 << size) - 1
+            end = start + (1 << (32 - size)) - 1
             return start, end
         
         ip_int = ip_to_int(ip)
