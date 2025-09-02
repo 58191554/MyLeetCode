@@ -5,14 +5,14 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 
 ### Algorithm
 
-| Problem              | Language support | Type                |
-| -------------------- | ---------------- | ------------------- |
-| find_fib_path        | Python           | Tree, binary search |
-| find_optimal_commute | Python, Java     | BFS, Graph          |
-| cidr_white_checklist | Python           | string processing   |
-|                      |                  |                     |
-|                      |                  |                     |
-|                      |                  |                     |
+| Problem                      | Language support | Type                |
+| ---------------------------- | ---------------- | ------------------- |
+| find_fib_path                | Python           | Tree, binary search |
+| find_optimal_commute         | Python, Java     | BFS, Graph          |
+| cidr_white_checklist         | Python           | string processing   |
+| total_lengths_after_each_add | Python           | Binary search       |
+|                              |                  |                     |
+|                              |                  |                     |
 
 ## Concurrency
 
