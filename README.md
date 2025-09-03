@@ -14,12 +14,19 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 |                              |                  |                     |
 |                              |                  |                     |
 
-## Concurrency
-
-| Problem                  | Language support |
-| ------------------------ | ---------------- |
-| bounded_blocking_queue   | Java             |
-| token_bucket_rate_imiter | Java             |
-|                          |                  |
-
 ## System Design Coding.
+
+| Problem                  | Language Support | Type |
+| ------------------------ | ---------------- | ---- |
+| bounded_blocking_queue   | Java             |      |
+| token_bucket_rate_imiter | Java             |      |
+|                          |                  |      |
+
+ ## Machine Learning
+
+| Problem | Language Support | Type |
+| ------- | ---------------- | ---- |
+| RoPE    | PyTorch          | llm  |
+|         |                  |      |
+|         |                  |      |
+
