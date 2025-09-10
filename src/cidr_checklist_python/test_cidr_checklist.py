@@ -1,5 +1,5 @@
 import pytest
-from cidr_white_checklist import Solution
+from cidr_checklist_python.cidr_checklist import Solution
 
 
 def test_basic_true_false():
@@ -28,6 +28,13 @@ def test_multiple_cidrs_any_match():
 def test_prefix_zero_matches_all():
     sol = Solution()
     cidrs = ["0.0.0.0/0"]
+    assert sol.cidr_white_checklist(cidrs, "0.0.0.0") is True
+    assert sol.cidr_white_checklist(cidrs, "255.255.255.255") is True
+    assert sol.cidr_white_checklist(cidrs, "8.8.8.8") is True
+
+def test_prefix_32_matches_all():
+    sol = Solution()
+    cidrs = ["0.0.0.0/32"]
     assert sol.cidr_white_checklist(cidrs, "0.0.0.0") is True
     assert sol.cidr_white_checklist(cidrs, "255.255.255.255") is True
     assert sol.cidr_white_checklist(cidrs, "8.8.8.8") is True

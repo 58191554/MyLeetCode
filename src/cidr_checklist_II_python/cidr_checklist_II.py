@@ -22,37 +22,34 @@ def cidr_to_range(cidr):
     start = (ip >> (32 - mask)) << (32 - mask)
     return start, start + (1 << (32 - mask))
 
-def not_within_range(s, e, l, r):
-    return e <= l or r <= s
-
-def cidr_checklist_II(ruls: List[str], cidr: str):
-    cidr = cidr_to_range(cidr)
-    starts = [cidr[0]]
-    ends = [cidr[1]]
+def cidr_checklist_II(rules: List[str], cidr: str) -> str:
+    s, e = cidr_to_range(cidr)
     status = BEGIN
-    for label, rCidr in ruls:
-        left, right = cidr_to_range(rCidr)
-        idx = 0
-        while idx < len(starts):
-            s, e = starts[idx], ends[idx]
-            if not_within_range(s, e, left, right):
-                idx += 1
+    cStarts, cEnds = [s], [e]
+    for r in rules:
+        rStart, rEnd = cidr_to_range(r[1])
+        i = 0
+        while i < len(cStarts):
+            cStart, cEnd = cStarts[i], cEnds[i]
+            if cEnd <= rStart or rEnd <= cStart:
+                i += 1
                 continue
-            print("left = {}, right = {}, start = {}, end = {}".format(left, right, s, e))
-            if status == DENY or (status != BEGIN and status != label):
+            if status != r[0] and status != BEGIN:
                 return DENY
-            status = label
-            if s < left < e:
-                ends[idx] = left
-                idx += 1
-            elif s < right < e:
-                starts[idx] = right
-                idx += 1
-            elif left <= s and e <= right:
-                starts.pop(idx)
-                ends.pop(idx)
-            else:
-                ends[idx] = left
-                starts.insert(idx + 1, right)
-                ends.insert(idx, e)
-    return DENY if status == BEGIN else status 
+            status = r[0]
+            if rStart <= cStart and cEnd <= rEnd:
+                cStarts.pop(i)
+                cEnds.pop(i)
+                continue
+            elif cStart < rStart and rEnd < cEnd:
+                cEnds[i] = rStart
+                cStarts.insert(i + 1, rEnd)
+                cEnds.insert(i + 1, cEnd)
+            elif cStart < rStart:
+                cEnds[i] = rStart
+            elif rEnd < cEnd:
+                cStarts[i] = rEnd
+            i += 1
+    return status if status != BEGIN else DENY
+    
+    
