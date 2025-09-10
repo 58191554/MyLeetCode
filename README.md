@@ -24,9 +24,9 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 
  ## Machine Learning
 
-| Problem | Language Support | Type |
-| ------- | ---------------- | ---- |
-| RoPE    | PyTorch          | llm  |
-|         |                  |      |
-|         |                  |      |
+| Problem              | Language Support | Type |
+| -------------------- | ---------------- | ---- |
+| RoPE                 | PyTorch          | llm  |
+| multi_head_attention | PyTorch          | llm  |
+| logistic_regression  | Bumpy            | ml   |
 
