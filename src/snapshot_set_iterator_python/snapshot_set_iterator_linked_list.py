@@ -5,89 +5,109 @@ class Entry:
         self.value: int = value
         self.birth: int = birth  # inclusive
         self.death: int = float('inf')  # exclusive
+        self.nx = None
+        self.pv = None
 
     def aliveAt(self, v: int) -> bool:
         return self.birth <= v < self.death
 
 class SnapshotSet:
     def __init__(self):
-        self.logHistory: List[Entry] = []  # append-only history
-        self.liveEntryMap: Dict[int, Entry] = {}  # currently present values
-        self.activeSnaps: List[int] = []  # For gc support
+        # 双哨兵
+        self.head = Entry(0, 0)
+        self.tail = Entry(0, 0)
+        self.head.nx = self.tail
+        self.tail.pv = self.head
 
-        self.version: int = 0  # global logical clock
-        self.gcIndex: int = 0  # First entry that may still be needed by any iterator
+        self.cur = 0
+        self.alive_mp: Dict[int, Entry] = {}
+        self.activeSnaps: List[int] = []
 
     def add(self, n: int) -> bool:
-        if n in self.liveEntryMap:
+        if n in self.alive_mp:
             return False
-        self.version += 1
-        entry = Entry(n, self.version)
-        self.logHistory.append(entry)
-        self.liveEntryMap[n] = entry
+        self.cur += 1
+        e = Entry(n, self.cur)
+        self.alive_mp[n] = e
+        # 插到 tail 前
+        end = self.tail.pv
+        end.nx = e
+        e.pv = end
+        e.nx = self.tail
+        self.tail.pv = e
         return True
 
     def remove(self, n: int) -> bool:
-        entry = self.liveEntryMap.get(n)
-        if entry is None:
+        e = self.alive_mp.get(n)
+        if e is None:
             return False
-        self.version += 1
-        entry.death = self.version
-        del self.liveEntryMap[n]
+        self.cur += 1
+        e.death = self.cur
+        self.alive_mp.pop(n)
         return True
 
     def contains(self, n: int) -> bool:
-        return n in self.liveEntryMap
+        return n in self.alive_mp
 
     def getIterator(self) -> Iterator[int]:
-        self.activeSnaps.append(self.version)
-        return self.SnapshotIterator(self, self.version)
+        snap = self.cur
+        self.activeSnaps.append(snap)
+        return self.SnapshotIterator(self, snap)
 
     class SnapshotIterator:
-        def __init__(self, outer: 'SnapshotSet', snap: int):
+        def __init__(self, outer: 'SnapshotSet', v: int):
             self.outer = outer
-            self.snap: int = snap  # Fixed version this iterator sees
-            self.idx: int = outer.gcIndex  # We never need to scan earlier than gcIndex
-            self.next: Optional[int] = None  # Cached next element
-            self._advance()
+            self.version = v
+            self.tail = outer.tail
+            self.cur: Optional[Entry] = outer.head.nx  # 第一个真实节点
 
         def __iter__(self) -> 'SnapshotSet.SnapshotIterator':
             return self
 
         def __next__(self) -> int:
-            if self.next is None:
+            if not self.hasNext():
+                # 耗尽：注销快照并 GC
+                try:
+                    self.outer.activeSnaps.remove(self.version)
+                except ValueError:
+                    pass
+                self.outer._gc()
                 raise StopIteration
-            res = self.next
-            self._advance()
-            return res
+            val = self.cur.value
+            self.cur = self.cur.nx
+            return val
 
         def hasNext(self) -> bool:
-            return self.next is not None
+            node = self.cur
+            if node is None:  # 保护：应对极端情况
+                return False
+            # 找到第一个对本快照可见的节点；遇到未来出生的可提前结束
+            while node != self.tail:
+                if node.birth > self.version:
+                    break
+                if node.aliveAt(self.version):
+                    self.cur = node
+                    return True
+                node = node.nx
+                if node is None:  # 若外部回收破坏了链式可达，防御返回
+                    return False
+            self.cur = node
+            return False
 
-        # Advances to the next visible entry in the log history for this snapshot.
-        def _advance(self) -> None:
-            self.next = None
-            while self.idx < len(self.outer.logHistory):
-                entry = self.outer.logHistory[self.idx]
-                self.idx += 1
-                if entry.aliveAt(self.snap):
-                    # visible in this snapshot
-                    self.next = entry.value
-                    return
-
-            # Exhausted, drop snapshot and try to GC
-            try:
-                self.outer.activeSnaps.remove(self.snap)
-            except ValueError:
-                pass
-            self.outer._gc()
-
-    # Discards history that no active iterator can reach.
+    # 丢弃所有“对最老活跃快照也不可见”的链表前缀
     def _gc(self) -> None:
-        oldestSnap = self.version if not self.activeSnaps else min(self.activeSnaps)
-        while (self.gcIndex < len(self.logHistory) and
-               self.logHistory[self.gcIndex].death < oldestSnap):
-            self.gcIndex += 1 # entry is invisible to every live iterator
+        oldest = self.cur if not self.activeSnaps else min(self.activeSnaps)
+        node = self.head.nx
+        while node != self.tail and node.death < oldest:
+            nxt = node.nx
+            # 物理摘除：让 head 指向 nxt，nxt 的 pv 指回 head
+            self.head.nx = nxt
+            nxt.pv = self.head
+            # ⚠️ 关键：不要把 node.nx 置空，避免正在迭代的游标失联
+            # 允许把回指断开以便更快释放
+            node.pv = None
+            # （node 仍可能被某个迭代器引用；当引用解除后，Python GC 会释放）
+            node = nxt
 
 # Helper function to iterate all elements in the iterator for easier visualization
 def iterateAllElements(it: Iterator[int]) -> List[int]:
