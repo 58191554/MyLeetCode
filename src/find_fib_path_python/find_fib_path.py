@@ -1,64 +1,53 @@
-"""
-https://stackoverflow.com/questions/76142856/finding-a-path-between-two-nodes-in-a-k-th-order-fibonacci-tree
-"""
-
-
-class TreeNode:
-    def __init__(self, val, order):
-        self.l = None
-        self.r = None
-        self.val = val
-        self.order = order
-
+from typing import List, Optional
 
 class Solution:
-    def find_fib_path(self, start_label: int, end_label: int, root: TreeNode) -> str:
-        # Handle trivial case
-        if start_label == end_label:
+    def findPath(self, order: int, source: int, dest: int) -> str:
+        if source == dest:
             return ""
-
-        # Compute subtree sizes: size(n) = size(n-2) + size(n-1) + 1 with size(0)=size(1)=1
-        size_cache = {0: 1, 1: 1}
-
-        def tree_size(order: int) -> int:
-            if order in size_cache:
-                return size_cache[order]
-            size_cache[order] = tree_size(order - 2) + tree_size(order - 1) + 1
-            return size_cache[order]
-
-        # Compute path from root (label 0) to a given target label using only L/R
-        def path_from_root_to_label(order: int, root_label: int, target_label: int) -> str:
-            if target_label == root_label:
-                return ""
-            if order <= 1:
-                # Leaf but different label -> invalid
-                raise ValueError("Target label not present in the tree of given order")
-
-            left_size = tree_size(order - 2)
-            left_start_label = root_label + 1
-            left_end_label = root_label + left_size
-
-            if target_label <= left_end_label:
-                return "L" + path_from_root_to_label(order - 2, left_start_label, target_label)
-
-            right_start_label = left_end_label + 1
-            return "R" + path_from_root_to_label(order - 1, right_start_label, target_label)
-
-        order = root.order
-        path_root_to_start = path_from_root_to_label(order, 0, start_label)
-        path_root_to_end = path_from_root_to_label(order, 0, end_label)
-
-        # Find longest common prefix (LCA)
-        common = 0
-        for a, b in zip(path_root_to_start, path_root_to_end):
-            if a == b:
-                common += 1
-            else:
-                break
-
-        ups = len(path_root_to_start) - common
-        downs = path_root_to_end[common:]
-        return ("U" * ups) + downs 
-        
-
+        fibs = [1, 1]
+        for i in range(2, order + 1):
+            fibs.append(fibs[-1] + fibs[-2] + 1)
+        def getBoundaries(x, o):
+            assert o >= 2
+            l_size, r_size = fibs[o - 2], fibs[o - 1]
+            l_start = x + 1
+            l_end = l_start + l_size - 1
+            r_start = l_end + 1
+            r_end = r_start + r_size - 1
+            return l_start, l_end, r_start, r_end
             
+        def findCommonParent(x, o):
+            if x == source or x == dest:
+                return (x, o)
+            l_start, l_end, r_start, r_end = getBoundaries(x, o)
+            if l_start <= source <= l_end and l_start <= dest <= l_end:
+                return findCommonParent(l_start, o - 2)
+            if r_start <= source <= r_end and r_start <= dest <= r_end:
+                return findCommonParent(r_start, o - 1)
+            return (x, o)
+        cp_x, cp_o = findCommonParent(0, order)
+        def findSourcePath(x, o):
+            if x == source:
+                return ""
+            path = ""
+            l_start, l_end, r_start, r_end = getBoundaries(x, o)
+            if l_start <= source <= l_end:
+                path += findSourcePath(l_start, o - 2)
+            else:
+                path += findSourcePath(r_start, o - 1)
+            path += "U"
+            return path
+        
+        def findDestPath(x, o):
+            if x == dest:
+                return ""
+            path = ""
+            l_start, l_end, r_start, r_end = getBoundaries(x, o)
+            if l_start <= dest <= l_end:
+                path += "L"
+                path += findDestPath(l_start, o - 2)
+            else:
+                path += "R"
+                path += findDestPath(r_start, o - 1)
+            return path
+        return findSourcePath(cp_x, cp_o) + findDestPath(cp_x, cp_o)

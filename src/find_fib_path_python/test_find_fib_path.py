@@ -1,110 +1,89 @@
-from typing import Tuple
-from find_fib_path import TreeNode
 import pytest
+
 from find_fib_path import Solution
 
 
-def create_tree(n: int, x: int) -> Tuple[TreeNode, int]:
-    if n == 1 or n == 0:
-        return TreeNode(x, n), 1
-    node = TreeNode(x, n)
-    l_node, l_num = create_tree(n - 2, x + 1)
-    r_node, r_num = create_tree(n - 1, x + l_num + 1)
-    node.l = l_node
-    node.r = r_node
-    return node, l_num + r_num + 1
-
-# Helpers for tests
-
-def find_path_in_tree(root: TreeNode, start: int, end: int) -> str:
-    # Build parent map and find references to start and end
-    parent = {root: None}
-    node_by_val = {root.val: root}
-
-    stack = [root]
-    while stack:
-        node = stack.pop()
-        if node.l:
-            parent[node.l] = node
-            node_by_val[node.l.val] = node.l
-            stack.append(node.l)
-        if node.r:
-            parent[node.r] = node
-            node_by_val[node.r.val] = node.r
-            stack.append(node.r)
-
-    start_node = node_by_val[start]
-    end_node = node_by_val[end]
-
-    # Path from root to nodes
-    def path_to_root(n: TreeNode):
-        p = []
-        while n is not None:
-            p.append(n)
-            n = parent[n]
-        p.reverse()
-        return p
-
-    ps = path_to_root(start_node)
-    pe = path_to_root(end_node)
-
-    # Find LCA
-    i = 0
-    while i < len(ps) and i < len(pe) and ps[i] is pe[i]:
-        i += 1
-    lca_idx = i - 1
-
-    # Moves up from start to LCA
-    ups = len(ps) - 1 - lca_idx
-
-    # Moves down from LCA to end
-    moves_down = []
-    for j in range(lca_idx + 1, len(pe)):
-        parent_node = pe[j - 1]
-        child_node = pe[j]
-        if parent_node.l is child_node:
-            moves_down.append('L')
-        else:
-            moves_down.append('R')
-
-    return 'U' * ups + ''.join(moves_down)
+def test_example_1():
+    order = 5
+    source = 5
+    dest = 7
+    assert Solution().findPath(order, source, dest) == "UUURL"
 
 
-def test_single_node_orders():
-    sol = Solution()
-
-    # Order 0 and 1 trees: only one node (label 0)
-    root0, _ = create_tree(0, 0)
-    assert sol.find_fib_path(0, 0, root0) == ""
-
-    root1, _ = create_tree(1, 0)
-    assert sol.find_fib_path(0, 0, root1) == ""
+def test_example_2():
+    order = 4
+    source = 8
+    dest = 3
+    assert Solution().findPath(order, source, dest) == "UUULR"
 
 
-_cases = [
-    (0, 0),
-    (0, 1),
-    (1, 0),
-    (2, 3),
-    # (5, 7) is covered by a dedicated test below
-    (7, 5),
-    (3, 8),
-    (8, 3),
-    (6, 6),
-]
+def test_example_3():
+    order = 5
+    source = 4
+    dest = 13
+    assert Solution().findPath(order, source, dest) == "UUURRRL"
 
 
-@pytest.mark.parametrize("s,e", _cases, ids=[f"{s}->{e}" for s, e in _cases])
-def test_paths_match_ground_truth(s: int, e: int):
-
-    sol = Solution()
-    root5, _ = create_tree(5, 0)
-    expected = find_path_in_tree(root5, s, e)
-    got = sol.find_fib_path(s, e, root5)
-    assert got == expected
+def test_example_4():
+    order = 2
+    source = 2
+    dest = 1
+    assert Solution().findPath(order, source, dest) == "UL"
 
 
-def test_given_example_5_to_7():
-    sol = Solution()
-    root, _ = create_tree(5, 0)
-    assert sol.find_fib_path(5, 7, root) == "UUURL"
+def test_example_5_same_node():
+    order = 4
+    source = 3
+    dest = 3
+    assert Solution().findPath(order, source, dest) == ""
+
+
+def test_edge_same_node_min_order():
+    order = 2
+    source = 0
+    dest = 0
+    assert Solution().findPath(order, source, dest) == ""
+
+
+def test_edge_within_same_subtree_small_order():
+    # order=3 labels: 0(root), 1(L), 2(R), 3(RL), 4(RR)
+    # 3 -> 4 : U then R
+    order = 3
+    source = 3
+    dest = 4
+    assert Solution().findPath(order, source, dest) == "UR"
+
+
+def test_edge_root_to_deep_rightmost():
+    # order=5 rightmost leaf label is 14; path is RRRR
+    order = 5
+    source = 0
+    dest = 14
+    assert Solution().findPath(order, source, dest) == "RRRR"
+
+
+def test_edge_deep_left_to_root_then_left():
+    # order=3: 4 -> 1 is UUL
+    order = 3
+    source = 4
+    dest = 1
+    assert Solution().findPath(order, source, dest) == "UUL"
+
+
+def test_edge_within_left_fn2_subtree():
+    # order=4 left Fn2 subtree labels: 1(rootL), 2(L of L), 3(R of L)
+    # 2 -> 3 : U then R
+    order = 4
+    source = 2
+    dest = 3
+    assert Solution().findPath(order, source, dest) == "UR"
+
+
+def test_edge_root_to_right_left_leaf():
+    # order=3: 0 -> 3 is R then L
+    order = 3
+    source = 0
+    dest = 3
+    assert Solution().findPath(order, source, dest) == "RL"
+
+
