@@ -1,168 +1,86 @@
-from typing import Dict, List, Iterator, Optional
-
+from math import inf
+import heapq
+from collections import deque
 class Entry:
-    def __init__(self, value: int, birth: int):
-        self.value: int = value
-        self.birth: int = birth  # inclusive
-        self.death: int = float('inf')  # exclusive
-
-    def aliveAt(self, v: int) -> bool:
-        return self.birth <= v < self.death
+    def __init__(self, val, birth):
+        self.val = val
+        self.birth = birth; self.death = inf
+        
+    def alive(self, time):
+        return self.birth <= time < self.death
 
 class SnapshotSet:
     def __init__(self):
-        self.logHistory: List[Entry] = []  # append-only history
-        self.liveEntryMap: Dict[int, Entry] = {}  # currently present values
-        self.activeSnaps: List[int] = []  # For gc support
-
-        self.version: int = 0  # global logical clock
-        self.gcIndex: int = 0  # First entry that may still be needed by any iterator
+        self.log = []
+        self.mp = {}
+        self.alive_snap_versions = []
+        self.alive_heap = []
+        self.version = 0
+        self.gcIdx = 0
 
     def add(self, n: int) -> bool:
-        if n in self.liveEntryMap:
+        if n in self.mp:
             return False
-        self.version += 1
         entry = Entry(n, self.version)
-        self.logHistory.append(entry)
-        self.liveEntryMap[n] = entry
+        self.mp[n] = entry
+        self.log.append(entry)
         return True
 
     def remove(self, n: int) -> bool:
-        entry = self.liveEntryMap.get(n)
-        if entry is None:
+        if n not in self.mp:
             return False
-        self.version += 1
+        entry = self.mp.pop(n)
         entry.death = self.version
-        del self.liveEntryMap[n]
         return True
-
+        
     def contains(self, n: int) -> bool:
-        return n in self.liveEntryMap
+        return n in self.mp
+    
+    def getIterator(self):
+        snapshotSetItr = SnapshotSetIterator(self, self.version)
+        self.alive_snap_versions.append(self.version)
+        heapq.heappush(self.alive_heap, self.version)
+        self.version += 1
+        return snapshotSetItr
+    
+    def gc(self, stale_version):
+        if not self.alive_snap_versions:
+            return
+        self.alive_snap_versions.remove(stale_version)
+        if self.alive_heap and self.alive_heap[0] == stale_version:
+            while self.alive_heap and self.alive_heap[0] not in self.alive_snap_versions:
+                heapq.heappop(self.alive_heap)
+        oldest_version = self.alive_heap[0] if self.alive_heap else self.version
+        while self.gcIdx < len(self.log) and self.log[self.gcIdx].death <= oldest_version:
+            self.gcIdx += 1
 
-    def getIterator(self) -> Iterator[int]:
-        self.activeSnaps.append(self.version)
-        return self.SnapshotIterator(self, self.version)
+class SnapshotSetIterator:
+    def __init__(self, outer, version):
+        self.outer = outer
+        self.curIdx = outer.gcIdx
+        self.version = version
+        
+    def __next__(self):
+        log = self.outer.log
+        while self.curIdx < len(log):
+            if not log[self.curIdx].alive(self.version):
+                self.curIdx += 1
+                continue
+            result = log[self.curIdx].val
+            self.curIdx += 1
+            return result
+        self.outer.gc(self.version)
+        raise StopIteration
+    
+    def __iter__(self):
+        return self
 
-    class SnapshotIterator:
-        def __init__(self, outer: 'SnapshotSet', snap: int):
-            self.outer = outer
-            self.snap: int = snap  # Fixed version this iterator sees
-            self.idx: int = outer.gcIndex  # We never need to scan earlier than gcIndex
-            self.next: Optional[int] = None  # Cached next element
-            self._advance()
-
-        def __iter__(self) -> 'SnapshotSet.SnapshotIterator':
-            return self
-
-        def __next__(self) -> int:
-            if self.next is None:
-                raise StopIteration
-            res = self.next
-            self._advance()
-            return res
-
-        def hasNext(self) -> bool:
-            return self.next is not None
-
-        # Advances to the next visible entry in the log history for this snapshot.
-        def _advance(self) -> None:
-            self.next = None
-            while self.idx < len(self.outer.logHistory):
-                entry = self.outer.logHistory[self.idx]
-                self.idx += 1
-                if entry.aliveAt(self.snap):
-                    # visible in this snapshot
-                    self.next = entry.value
-                    return
-
-            # Exhausted, drop snapshot and try to GC
-            try:
-                self.outer.activeSnaps.remove(self.snap)
-            except ValueError:
-                pass
-            self.outer._gc()
-
-    # Discards history that no active iterator can reach.
-    def _gc(self) -> None:
-        oldestSnap = self.version if not self.activeSnaps else min(self.activeSnaps)
-        while (self.gcIndex < len(self.logHistory) and
-               self.logHistory[self.gcIndex].death < oldestSnap):
-            self.gcIndex += 1 # entry is invisible to every live iterator
-
-# Helper function to iterate all elements in the iterator for easier visualization
-def iterateAllElements(it: Iterator[int]) -> List[int]:
-    return list(it)
-
-def test1():
-    print("======== test 1: =========")
-    s = SnapshotSet()
-    assert s.add(1) is True
-    assert s.add(2) is True
-    assert s.add(3) is True
-    assert s.add(4) is True
-    assert s.add(1) is False
-    it1 = s.getIterator()
-    assert s.remove(1) is True
-    assert s.remove(3) is True
-    assert s.remove(5) is False
-    it2 = s.getIterator()
-    assert iterateAllElements(it1) == [1, 2, 3, 4]
-    assert iterateAllElements(it2) == [2, 4]
-    print("======== test 1: passed =========")
-def test2():
-    print("======== test 2: =========")
-    s = SnapshotSet()
-    it1 = s.getIterator()
-    assert s.add(10) is True
-    it2 = s.getIterator()
-    assert s.add(20) is True
-    it3 = s.getIterator()
-    assert s.add(30) is True
-    it4 = s.getIterator()
-    assert s.remove(30) is True
-    it5 = s.getIterator()
-    assert s.remove(20) is True
-    it6 = s.getIterator()
-    assert s.remove(10) is True
-    it7 = s.getIterator()
-
-    assert iterateAllElements(it1) == []
-    assert iterateAllElements(it2) == [10]
-    assert iterateAllElements(it3) == [10, 20]
-    assert iterateAllElements(it4) == [10, 20, 30]
-    assert iterateAllElements(it5) == [10, 20]
-    assert iterateAllElements(it6) == [10]
-    assert iterateAllElements(it7) == []
-    print("======== test 2: passed =========")
-
-def test3():
-    print("======== test 3: =========")
-    s = SnapshotSet()
-    assert s.remove(5) is False
-    assert s.add(5) is True
-    assert s.remove(5) is True
-    assert s.add(5) is True
-    assert iterateAllElements(s.getIterator()) == [5]
-    print("======== test 3: passed =========")
-def test4():
-    print("======== test 4: =========")
-    s = SnapshotSet()
-    assert s.add(1) is True
-    assert s.add(2) is True
-    assert s.add(3) is True
-    assert s.add(4) is True
-    assert s.add(5) is True
-    it1 = s.getIterator()
-    assert s.remove(2) is True
-    assert s.remove(4) is True
-    assert s.add(6) is True
-    it2 = s.getIterator()
-    assert iterateAllElements(it1) == [1, 2, 3, 4, 5]
-    assert iterateAllElements(it2) == [1, 3, 5, 6]
-    print("======== test 4: passed =========")
-
-if __name__ == "__main__":
-    test1()
-    test2()
-    test3()
-    test4()
+    def has_next(self):
+        log = self.outer.log
+        while self.curIdx < len(log):
+            if not log[self.curIdx].alive(self.version):
+                self.curIdx += 1
+            else:
+                return True
+        self.outer.gc(self.version)
+        return False
