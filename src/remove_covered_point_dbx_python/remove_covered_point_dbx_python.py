@@ -15,9 +15,11 @@ class Solution:
                     intervals[i] = [l, r - 1]
                 else:
                     pop_idx = idx - cur
-                    left = [[l, l + pop_idx]]
-                    right = [[l + pop_idx + 1, r]]
-                    intervals = intervals[:i] + left + right + intervals[i + 1:]
+                    left = [l, l + pop_idx]
+                    right = [l + pop_idx + 1, r]
+                    intervals = intervals[:i] + [left, right] + intervals[i + 1:]
                 break
             cur += size
         return intervals
+        
+                    

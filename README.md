@@ -13,6 +13,9 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 | total_lengths_after_each_add| Python          | Binary search      |
 | kth_person_bus             | Python          | Fenwick tree       |
 | snapshot_set_iterator       | Python          | Iterator           |
+| remove_covered_point_dbx_python | Python      | array             |
+| encode_decode_dbx_python      | Python        | array             |
+
 
 ## System Design Coding.
 
