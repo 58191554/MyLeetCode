@@ -1,86 +1,85 @@
-from math import inf
-import heapq
-from collections import deque
-class Entry:
-    def __init__(self, val, birth):
-        self.val = val
-        self.birth = birth; self.death = inf
-        
-    def alive(self, time):
-        return self.birth <= time < self.death
+import math
 
+class Entry:
+    def __init__(self, value: int, birth: int):
+        self.value = value
+        self.birth = birth
+        self.death = math.inf
+
+    def aliveAt(self, t: int) -> bool:
+        return self.birth <= t < self.death
 class SnapshotSet:
     def __init__(self):
         self.log = []
-        self.mp = {}
-        self.alive_snap_versions = []
-        self.alive_heap = []
+        self.entryMp = dict()
+        self.aliveSnap = []
         self.version = 0
         self.gcIdx = 0
 
     def add(self, n: int) -> bool:
-        if n in self.mp:
+        if n in self.entryMp:
             return False
-        entry = Entry(n, self.version)
-        self.mp[n] = entry
+        entry = Entry(n, birth=self.version)
         self.log.append(entry)
+        self.entryMp[n] = entry
+        self.version += 1
         return True
 
     def remove(self, n: int) -> bool:
-        if n not in self.mp:
+        if n not in self.entryMp:
             return False
-        entry = self.mp.pop(n)
+        entry = self.entryMp.pop(n)
         entry.death = self.version
         return True
         
     def contains(self, n: int) -> bool:
-        return n in self.mp
+        return n in self.entryMp
     
     def getIterator(self):
-        snapshotSetItr = SnapshotSetIterator(self, self.version)
-        self.alive_snap_versions.append(self.version)
-        heapq.heappush(self.alive_heap, self.version)
+        snapshotset_iter = SnapshotSetIterator(self, self.version)
+        self.aliveSnap.append(self.version)
         self.version += 1
-        return snapshotSetItr
-    
-    def gc(self, stale_version):
-        if not self.alive_snap_versions:
-            return
-        self.alive_snap_versions.remove(stale_version)
-        if self.alive_heap and self.alive_heap[0] == stale_version:
-            while self.alive_heap and self.alive_heap[0] not in self.alive_snap_versions:
-                heapq.heappop(self.alive_heap)
-        oldest_version = self.alive_heap[0] if self.alive_heap else self.version
-        while self.gcIdx < len(self.log) and self.log[self.gcIdx].death <= oldest_version:
-            self.gcIdx += 1
+        return snapshotset_iter
+        
+    def gc(self, snap_version):
+        if snap_version == min(self.aliveSnap):
+            self.aliveSnap.remove(snap_version)
+            if not self.aliveSnap:
+                self.gcIdx = len(self.log)
+            else:
+                oldest_version = min(self.aliveSnap)
+                while self.gcIdx < len(self.log):
+                    if self.log[self.gcIdx].aliveAt(oldest_version):
+                        break
+                    else:
+                        self.gcIdx += 1
+        else:
+            self.aliveSnap.remove(snap_version)
 
 class SnapshotSetIterator:
     def __init__(self, outer, version):
-        self.outer = outer
-        self.curIdx = outer.gcIdx
         self.version = version
-        
-    def __next__(self):
-        log = self.outer.log
-        while self.curIdx < len(log):
-            if not log[self.curIdx].alive(self.version):
-                self.curIdx += 1
-                continue
-            result = log[self.curIdx].val
-            self.curIdx += 1
-            return result
-        self.outer.gc(self.version)
-        raise StopIteration
+        self.outer = outer
+        self.cur = outer.gcIdx
+        self.log = outer.log
     
     def __iter__(self):
         return self
+    
+    def __next__(self):
+        while self.cur < len(self.log):
+            if self.log[self.cur].aliveAt(self.version):
+                result = self.log[self.cur].value
+                self.cur += 1
+                return result
+            self.cur += 1
+        self.outer.gc(self.version)
+        raise StopIteration
 
-    def has_next(self):
-        log = self.outer.log
-        while self.curIdx < len(log):
-            if not log[self.curIdx].alive(self.version):
-                self.curIdx += 1
-            else:
+    def hasNext(self):
+        while self.cur < len(self.log):
+            if self.log[self.cur].aliveAt(self.version):
                 return True
+            self.cur += 1
         self.outer.gc(self.version)
         return False

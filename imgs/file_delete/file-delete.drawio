@@ -1,0 +1,101 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36" version="28.2.5">
+  <diagram name="Page-1" id="s65ci5HjTHKFimtgQWiO">
+    <mxGraphModel dx="984" dy="536" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-15" value="" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="545" y="125" width="290" height="205" as="geometry" />
+        </mxCell>
+        <mxCell id="XvoC3HMZyKPS88NwsCIW-1" value="user" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="125" y="298" width="50" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="XvoC3HMZyKPS88NwsCIW-2" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;" parent="1" edge="1">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="190" y="312.5" as="sourcePoint" />
+            <mxPoint x="290" y="312.5" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XvoC3HMZyKPS88NwsCIW-3" value="server" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="290" y="283" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="XvoC3HMZyKPS88NwsCIW-4" value="meta data table" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="630" y="150" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-1" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="XvoC3HMZyKPS88NwsCIW-3" target="XvoC3HMZyKPS88NwsCIW-4">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="480" y="270" as="sourcePoint" />
+            <mxPoint x="580" y="270" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-2" value="1. get file location, change status as PENDING" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tsi2WIEaErFGOJu5Ds4h-1">
+          <mxGeometry x="0.0761" y="1" relative="1" as="geometry">
+            <mxPoint x="-38" y="-11" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-3" value="outbox table" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="238" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-4" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="XvoC3HMZyKPS88NwsCIW-3" target="tsi2WIEaErFGOJu5Ds4h-3">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="490" y="350" as="sourcePoint" />
+            <mxPoint x="590" y="350" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-5" value="2. write the delete job in the outbox" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tsi2WIEaErFGOJu5Ds4h-4">
+          <mxGeometry x="0.013" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-7" value="worker" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-8" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="tsi2WIEaErFGOJu5Ds4h-7" target="tsi2WIEaErFGOJu5Ds4h-3">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="750" y="290" as="sourcePoint" />
+            <mxPoint x="850" y="290" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-10" value="3. get job&lt;div&gt;6. delete job&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tsi2WIEaErFGOJu5Ds4h-8">
+          <mxGeometry x="0.2141" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-9" value="file system" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="348.8" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-11" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="tsi2WIEaErFGOJu5Ds4h-7" target="tsi2WIEaErFGOJu5Ds4h-9">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="790" y="350" as="sourcePoint" />
+            <mxPoint x="890" y="350" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-12" value="4. delete file" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tsi2WIEaErFGOJu5Ds4h-11">
+          <mxGeometry x="0.2416" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-13" value="" style="edgeStyle=none;orthogonalLoop=1;jettySize=auto;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="tsi2WIEaErFGOJu5Ds4h-7" target="XvoC3HMZyKPS88NwsCIW-4">
+          <mxGeometry width="100" relative="1" as="geometry">
+            <mxPoint x="790" y="260" as="sourcePoint" />
+            <mxPoint x="890" y="260" as="targetPoint" />
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-14" value="5. change the file status as DELETE" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="tsi2WIEaErFGOJu5Ds4h-13">
+          <mxGeometry x="-0.108" y="1" relative="1" as="geometry">
+            <mxPoint x="29" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tsi2WIEaErFGOJu5Ds4h-16" value="database" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="575" y="88" width="70" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -19,27 +19,28 @@ from typing import List, Tuple, Optional
 
 class Solution:
     def cidr_white_checklist(self, cidrs: List[str], ip: str):
-        def ip_to_int(ip: str) -> int:
-            arr = ip.split(".")
-            arr = [int(x) for x in arr]
-            return arr[0] * (1 << 24) + arr[1] * (1 << 16) + arr[2] * (1 << 8) + arr[3]
+        def ipToInt(ip: str) -> int:
+            ip_arr = list(map(lambda x: int(x), ip.split('.')))
+            result = 0
+            result += ip_arr[0] << 24
+            result += ip_arr[1] << 16
+            result += ip_arr[2] << 8
+            result += ip_arr[3]
+            return result
+
+        def cidrToInterval(cidr: str):
+            cidr_arr = cidr.split('/')
+            if len(cidr) == 1:
+                ip = ipToInt(cidr)
+                return ip, ip + 1
+            ip = ipToInt(cidr_arr[0])
+            mask = 1 << int(cidr_arr[1])
+            size = 1 << (32 - mask)
+            return ip, ip + size
         
-        def get_start_end(cidr: str) -> Tuple[int, int]:
-            start, size = cidr.split('/')
-            start = ip_to_int(start)
-            if size == None:
-                size = 0
-            else:
-                size = int(size)
-            end = start + (1 << (32 - size)) - 1
-            return start, end
-        
-        ip_int = ip_to_int(ip)
-        print("ip = ", ip_int)
-        for cidr in cidrs:
-            start, end = get_start_end(cidr)
-            print("start = ", start, ", end = ", end)
-            if start <= ip_int <= end:
-                return True
+        for rule in cidrs:
+            start, end = cidrToInterval(rule[1])
+            if start <= ip < end:
+                return rule[0] == "ALLOW"
         return False
             

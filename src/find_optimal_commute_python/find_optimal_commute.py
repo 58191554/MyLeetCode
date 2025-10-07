@@ -58,34 +58,54 @@ run Dijkstra with a **lexicographic** distance `(time, cost)` so that time is pr
 and cost is the tiebreaker.
 """
 
-from typing import List
-import heapq
-import math
+from typing import List, Optional
+from math import inf
+from collections import deque
 class Solution:
-    def find_optimal_commute(grid: List[List[int]], time: List[int], cost: List[int], start: tuple, end: tuple) -> tuple:
-        pq = []
-        heapq.heapify(pq)
-        heapq.heappush(pq, [0, 0, start[0], start[1]])
+    def findOptimalCommute(self, grid: List[List[str]], modes: List[str], costs: List[int], times: List[int]) -> str:
+        startX, startY = None, None
         m, n = len(grid), len(grid[0])
-        dis = [[math.inf] * n for _ in range(m)]
-        spend = [[math.inf] * n for _ in range(m)]
-        while pq:
-            d, c, i, j = heapq.heappop(pq)
-            c = -c
-            if d > dis[i][j]:
-                continue
-            if d < dis[i][j]:
-                dis[i][j] = d
-                spend[i][j] = c
-            elif d == dis[i][j] and c < spend[i][j]:
-                spend[i][j] = c
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == "S":
+                    startX, startY = i, j
+                    break
+            if startX != None and startY != None:
+                break
+        k = len(modes)
+        q = deque([(startX, startY, i, 0) for i in range(1, k + 1)])
+        visited = [[0] * n for _ in range(m)]
+        startMode = [0] * (k + 1)
+        dis = [inf] * (k + 1)
+        while q:
+            x, y, mode, d = q.popleft()
+            if grid[x][y] == "S":
+                if startMode[mode]:
+                    continue
+                startMode[mode] = 1             
             else:
-                continue
+                if visited[x][y]:
+                    continue
+                visited[x][y] = 1
+            
             for dx, dy in [[0, 1], [0, -1], [1, 0], [-1, 0]]:
-                ii, jj = i + dx, j + dy
-                if 0 <= ii < m and 0 <= jj < n:
-                    method = grid[ii][jj]
-                    heapq.heappush(pq, [d + time[method], -c - cost[method], ii, jj])
-        return dis[end[0]][end[1]], spend[end[0]][end[1]]
-        
-        
+                xx, yy = x + dx, y + dy
+                if 0 <= xx < m and 0 <= yy < n:
+                    if grid[xx][yy] == str(mode):
+                        q.append([xx, yy, mode, d + 1])
+                    elif grid[xx][yy] == "D":
+                        print(xx, yy, mode, d)
+                        if dis[mode] == inf:
+                            dis[mode] = d   
+        minCost = inf; minTime = inf; result = ""
+        print(dis)
+        for i, mode in enumerate(modes):
+            if minTime == dis[i + 1] * times[i] and minCost > dis[i + 1] * costs[i]:
+                minCost = dis[i + 1] * costs[i]
+                result = mode
+            elif minTime > dis[i + 1] * times[i]:
+                minTime = dis[i + 1] * times[i]
+                minCost = dis[i + 1] * costs[i]
+                result = mode
+        return result
+                
