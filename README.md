@@ -15,7 +15,7 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 | snapshot_set_iterator       | Python          | Iterator           |
 | remove_covered_point_dbx_python | Python      | array             |
 | encode_decode_dbx_python      | Python        | array             |
-
+| [tetris_drop_python](https://github.com/58191554/MyLeetCode/tree/main/src/tetris_drop_python) | Python | array |
 
 ## System Design Coding.
 
