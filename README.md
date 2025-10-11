@@ -18,6 +18,8 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 | [encode_decode](https://github.com/58191554/MyLeetCode/tree/main/src/encode_and_decode_dbx_python) | Python        | array             | DBX |
 | [tetris_drop](https://github.com/58191554/MyLeetCode/tree/main/src/tetris_drop_python) | Python | array | DBX |
 | [max_triplet](https://github.com/58191554/MyLeetCode/tree/main/src/max_triplet_python) | Python | dp | GG |
+| closest_sum_to_zero_after_sign_flip_python | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/closest_sum_to_zero_after_sign_flip_python), Cpp | Array | GG |
+| sorted_split_merge_count_python | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/sorted_split_merge_count_python) | pre/surfix | GG |
 
 ## System Design Coding.
 
