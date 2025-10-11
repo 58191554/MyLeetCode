@@ -5,31 +5,33 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 
 ### Algorithm
 
-| Problem                      | Language support | Type                |
-| ---------------------------- | ---------------- | ------------------- |
-| find_fib_path               | Python          | Tree, binary search |
-| find_optimal_commute        | Python, Java    | BFS, Graph         |
-| cidr_white_checklist        | Python          | string processing  |
-| total_lengths_after_each_add| Python          | Binary search      |
-| kth_person_bus             | Python          | Fenwick tree       |
-| snapshot_set_iterator       | Python          | Iterator           |
-| remove_covered_point_dbx_python | Python      | array             |
-| encode_decode_dbx_python      | Python        | array             |
-| [tetris_drop_python](https://github.com/58191554/MyLeetCode/tree/main/src/tetris_drop_python) | Python | array |
+| Problem                      | Language support | Type                | Company |
+| ---------------------------- | ---------------- | ------------------- | ---------------------------- |
+| [find_fib_path](https://github.com/58191554/MyLeetCode/tree/main/src/find_fib_path_python)               | Python          | Tree, binary search | DBX |
+| find_optimal_commute        | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/find_optimal_commute_python), [Java](https://github.com/58191554/MyLeetCode/tree/main/src/find_optimal_commute_java)    | BFS, Graph         | DBX |
+| [cidr_white_checklist](https://github.com/58191554/MyLeetCode/tree/main/src/cidr_checklist_python)        | Python          | string processing  | DBX |
+| [cidr_white_checklist_II](https://github.com/58191554/MyLeetCode/tree/main/src/cidr_checklist_II_python)        | Python          | string processing  | DBX |
+| [total_lengths_after_each_add](https://github.com/58191554/MyLeetCode/tree/main/src/total_interval_lengths_after_each_add_java) | Python          | Binary search      |  |
+| [kth_person_bus](https://github.com/58191554/MyLeetCode/tree/main/src/kth_person_bus_python) | Python          | Fenwick tree       | WeRD |
+| [snapshot_set_iterator](https://github.com/58191554/MyLeetCode/tree/main/src/snapshot_set_iterator_python) | Python          | Iterator           | DBX |
+| [remove_covered_point](https://github.com/58191554/MyLeetCode/tree/main/src/remove_covered_point_dbx_python) | Python      | array             | DBX |
+| [encode_decode](https://github.com/58191554/MyLeetCode/tree/main/src/encode_and_decode_dbx_python) | Python        | array             | DBX |
+| [tetris_drop](https://github.com/58191554/MyLeetCode/tree/main/src/tetris_drop_python) | Python | array | DBX |
+| [max_triplet](https://github.com/58191554/MyLeetCode/tree/main/src/max_triplet_python) | Python | dp | GG |
 
 ## System Design Coding.
 
 | Problem                  | Language Support | Type |
 | ------------------------ | ---------------- | ---- |
-| bounded_blocking_queue   | Java             |      |
-| token_bucket_rate_imiter | Java             |      |
+| [bounded_blocking_queue](https://github.com/58191554/MyLeetCode/tree/main/src/bounded_blocking_queue_java)   | Java             |      |
+| [token_bucket_rate_imiter](https://github.com/58191554/MyLeetCode/tree/main/src/token_bucket_rate_limiter_java) | Java             |      |
 |                          |                  |      |
 
  ## Machine Learning
 
 | Problem              | Language Support | Type |
 | -------------------- | ---------------- | ---- |
-| RoPE                 | PyTorch          | llm  |
-| multi_head_attention | PyTorch          | llm  |
-| logistic_regression  | Bumpy            | ml   |
+| [RoPE](https://github.com/58191554/MyLeetCode/tree/main/src/rope_pytorch)                 | PyTorch          | llm  |
+| [multi_head_attention](https://github.com/58191554/MyLeetCode/tree/main/src/multi_head_attention_pytorch) | PyTorch          | llm  |
+| logistic_regression  | [Numpy](https://github.com/58191554/MyLeetCode/tree/main/src/logistic_regression_numpy) [Pytorch](https://github.com/58191554/MyLeetCode/tree/main/src/logistic_regression_pytorch)           | ml   |
 
