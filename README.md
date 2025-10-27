@@ -22,14 +22,26 @@ Somehow the leetcode doesn't cover all the problem the interview asks. This Repo
 | sorted_split_merge_count | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/sorted_split_merge_count_python) | pre/surfix | GG |
 | bids_of_product | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/bids_of_product_python) | SortedCollection | GG |
 | islands_in_a_binary_tree | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/islands_in_a_binary_tree_python) | Tree | GG |
+| currency_conversion | [Python](https://github.com/58191554/MyLeetCode/tree/main/src/currency_conversion_python) |  | GG |
+| interval_set |  | | GG |
+| diameter_of_a_binary_tree | | |  |
+| stream_slice | | | |
+| job_sequencing_with_deadlines | | | |
+| movie_recommendations_by_similarity_graph | | | |
+| minimum_cost_to_disconnect_root_from_all_leaves_in_a_weighted_binary_tree | | | |
+| has_subarray_k_mod_6e6 | | | |
+| equal_area_horizontal_cut_of_rectangles | | | |
+| restaurant_waiting_list | | | |
+| three_collinear_points | | | |
+| unique_string_compression | | | |
 
 ## System Design Coding.
 
-| Problem                  | Language Support | Type |
-| ------------------------ | ---------------- | ---- |
-| [bounded_blocking_queue](https://github.com/58191554/MyLeetCode/tree/main/src/bounded_blocking_queue_java)   | Java             |      |
+| Problem                                                      | Language Support | Type |
+| ------------------------------------------------------------ | ---------------- | ---- |
+| [bounded_blocking_queue](https://github.com/58191554/MyLeetCode/tree/main/src/bounded_blocking_queue_java) | Java             |      |
 | [token_bucket_rate_imiter](https://github.com/58191554/MyLeetCode/tree/main/src/token_bucket_rate_limiter_java) | Java             |      |
-|                          |                  |      |
+| tinyURL                                                      |                  |      |
 
  ## Machine Learning
 
